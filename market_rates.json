@@ -2,12 +2,12 @@
   "schemaVersion": 2,
   "fxUpdatedAt": null,
   "goldUpdatedAt": null,
-  "globalGoldUpdatedAt": "2026-11-15T15:28:27+00:00",
-  "updatedAt": "2026-11-15T15:28:43.983681+00:00",
-  "checkedAt": "2026-11-15T15:28:43.983681+00:00",
+  "globalGoldUpdatedAt": null,
+  "updatedAt": "2026-11-15T20:31:22.354395+00:00",
+  "checkedAt": "2026-11-15T20:31:22.354395+00:00",
   "sourceTimeNote": "وقت التحقق منفصل عن وقت السعر؛ الوقت غير المعلن من المصدر يظل غير معلن",
-  "lastUpdateHuman": "2026-11-15 05:28 PM بتوقيت القاهرة",
-  "lastCheckedHuman": "2026-11-15 05:28 PM بتوقيت القاهرة",
+  "lastUpdateHuman": "2026-11-15 10:31 PM بتوقيت القاهرة",
+  "lastCheckedHuman": "2026-11-15 10:31 PM بتوقيت القاهرة",
   "provider": "Ta3weem / بنك مصر / مركز المعلومات IDSC",
   "rateMode": "official",
   "fxProvider": "Ta3weem / بنك مصر",
@@ -89,6 +89,6 @@
       "source": "مركز المعلومات IDSC / الصاغة",
       "sourceUpdatedAt": null
     },
-    "goldOunceUSD": 3887.6
+    "goldOunceUSD": null
   }
 }
