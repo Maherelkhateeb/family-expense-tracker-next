@@ -24,7 +24,7 @@ const styles = ['glass','minimal','neumorphic','neon','clear','flat','elevated',
       });
       for(const mode of ['dark','light']){
         await page.evaluate(mode=>setAppColorMode(mode,false),mode);
-        const signatures={category:new Map(),list:new Map(),preview:new Map()};
+        const signatures={category:new Map(),list:new Map()};
         for(const style of styles){
           await page.evaluate(async style=>{
             setAppDesignStyle(style,false,false);
@@ -34,7 +34,7 @@ const styles = ['glass','minimal','neumorphic','neon','clear','flat','elevated',
             const targets={
               category:document.querySelector('#catGrid .cat-card'),
               list:document.querySelector('#qaOperationsListCard'),
-              preview:document.querySelector('#settingsThemePreview .settings-live-preview-card')
+              // The compact settings UI does not render the retired preview card.
             };
             const signature={};
             for(const [type,node] of Object.entries(targets)){
@@ -57,7 +57,7 @@ const styles = ['glass','minimal','neumorphic','neon','clear','flat','elevated',
         }
         const counts=Object.fromEntries(Object.entries(signatures).map(([type,map])=>[type,map.size]));
         console.log('CARD_VISUAL '+viewport.width+' '+mode+' '+JSON.stringify(counts));
-        assert.deepEqual(counts,{category:9,list:9,preview:9});
+        assert.deepEqual(counts,{category:9,list:9});
       }
       await page.evaluate(()=>{
         setAppDesignStyle('outlined',false,true);
