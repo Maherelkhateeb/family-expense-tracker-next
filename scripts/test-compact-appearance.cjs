@@ -65,7 +65,7 @@ const expected={palettes:8,icons:8,styles:9};
        const footer=document.querySelector('#viewExpenses .cat-card-bottom-half');
        const value=footer?.querySelector('.cat-number-val,.cat-amount-val');
        if(footer&&value){
-         const rgb=c=>{const m=c.match(/rgba?\\(([^)]+)\\)/);return m?m[1].split(',').slice(0,3).map(Number):null;};
+         const rgb=c=>{const start=c.indexOf('('),end=c.indexOf(')');return start>=0&&end>start?c.slice(start+1,end).split(',').slice(0,3).map(Number):null;};
          const lum=c=>c.map(v=>{const x=v/255;return x<=0.04045?x/12.92:((x+0.055)/1.055)**2.4}).reduce((s,v,j)=>s+v*[.2126,.7152,.0722][j],0);
          const fg=rgb(getComputedStyle(value).color),bg=rgb(getComputedStyle(footer).backgroundColor);
          if(fg&&bg){const a=lum(fg),b=lum(bg);result.footerContrast=(Math.max(a,b)+0.05)/(Math.min(a,b)+0.05);check(result.footerContrast>=4.5,'Expense amount contrast below AA: '+result.footerContrast);}
