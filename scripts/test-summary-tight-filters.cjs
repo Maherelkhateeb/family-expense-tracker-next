@@ -38,7 +38,7 @@ try {
       const member=document.querySelector('#summaryMemberSelector');
       const period=document.querySelector('#summaryLeftDrawer .summary-period-grid');
       const controls=drawer.querySelector('.summary-rebuilt-controls');
-      const currency=drawer.querySelectorAll('.summary-currency-row');
+      const currency=drawer.querySelectorAll('.summary-rebuilt-header .summary-currency-header-pill');
       const members=Array.from(member.querySelectorAll('button'));
       const dates=Array.from(period.querySelectorAll('button'));
       const memberRect=members.map(e=>e.getBoundingClientRect());
@@ -60,8 +60,8 @@ try {
       };
     });
     console.log('FILTER_LAYOUT '+viewport.name+' '+JSON.stringify(state));
-    assert.equal(state.currencyCount,1,'Duplicated currency row');
-    assert.match(state.currencyParent,/summary-rebuilt-controls/,'Currency row nested incorrectly');
+    assert.equal(state.currencyCount,1,'Expected exactly one visible summary currency selector');
+    assert.match(state.currencyParent,/summary-rebuilt-header/,'Currency selector should stay in summary header');
     assert.equal(state.contentParent,'summaryLeftDrawer','Summary results accidentally nested in filters');
     assert.equal(state.membersSameRow,true,'Member buttons wrap');
     assert.equal(state.dates,6,'Six date periods expected');
@@ -118,9 +118,9 @@ try {
     assert.equal(await page.evaluate(() => state.currentMemberFilter), 'الكل');
     await page.evaluate(()=>window.openSettingsModal());
     await page.locator('#settingsModal').waitFor({state:'visible',timeout:25000});
-    assert.ok(await page.locator('#compactAppearancePanel-cards').isVisible());
+    assert.ok(await page.locator('#settingsSec_appearance .antigravity-style-grid').isVisible());
     const cardRows=await page.evaluate(()=>{
-      const grid=document.getElementById('cardStyleButtonsContainer');
+      const grid=document.querySelector('#settingsSec_appearance .antigravity-style-grid');
       const buttons=[...grid.querySelectorAll('button[data-card-style]')];
       const rects=buttons.map(el=>el.getBoundingClientRect());
       const bounds=grid.getBoundingClientRect();
@@ -136,7 +136,7 @@ try {
       })),gridHeight:Math.round(bounds.height)};
     });
     console.log('CARD_LAYOUT '+viewport.name+' '+JSON.stringify(cardRows));
-    assert.equal(cardRows.count,10);
+    assert.equal(cardRows.count,9);
     assert.ok(cardRows.rows.every(x=>Math.abs(x.left)<=3&&Math.abs(x.right)<=3),
       'Card style grid has incomplete final row: '+JSON.stringify(cardRows.rows));
     await page.screenshot({path:'screenshots/'+viewport.name+'-cards.png',fullPage:false});
