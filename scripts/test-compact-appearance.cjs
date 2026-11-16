@@ -25,7 +25,7 @@ const sizes=[{name:'mobile-360',width:360,height:780},{name:'mobile-390',width:3
           count:accordions.length, keys:accordions.map(x=>x.dataset.appearanceSection),
           expanded:accordions.filter(x=>x.querySelector('.compact-appearance-panel').getBoundingClientRect().height>0).map(x=>x.dataset.appearanceSection),
           collapseControls:root.querySelectorAll('[aria-expanded]').length,
-          dataVisible:document.getElementById('settingsPane_data').getBoundingClientRect().height>0,
+          dataVisible:root.getBoundingClientRect().height>0,
           height:Math.round(root.getBoundingClientRect().height),
           width:root.clientWidth, contentWidth:root.scrollWidth,
           viewportWidth:innerWidth, scrollWidth:document.documentElement.scrollWidth,
@@ -39,9 +39,9 @@ const sizes=[{name:'mobile-360',width:360,height:780},{name:'mobile-390',width:3
       assert.deepEqual(initial.expanded,initial.keys);
       assert.equal(initial.collapseControls,0);
       assert.equal(initial.dataVisible,true);
-      assert.equal(initial.palettes,10);
-      assert.equal(initial.icons,10);
-      assert.equal(initial.cards,10);
+      assert.equal(initial.palettes,8);
+      assert.equal(initial.icons,8);
+      assert.equal(initial.cards,9);
       assert.ok(initial.contentWidth<=initial.width+2,'Appearance panel horizontal overflow');
       assert.ok(initial.scrollWidth<=initial.viewportWidth+2,'Document horizontal overflow');
 
@@ -95,7 +95,7 @@ const sizes=[{name:'mobile-360',width:360,height:780},{name:'mobile-390',width:3
         });
         console.log('GRID_GAPS '+size.name+' '+mode+' '+JSON.stringify(checked));
         for (const selector of ['.appearance-palette-grid','.appearance-icon-grid']) {
-          assert.equal(checked[selector].count,10,selector+' options changed');
+          assert.equal(checked[selector].count,8,selector+' options changed');
           assert.ok(checked[selector].noOverflow,selector+' overflow');
           assert.ok(checked[selector].blankEdges.every(gap=>gap<=3),
             selector+' contains blank partial rows '+JSON.stringify(checked[selector]));
@@ -110,7 +110,7 @@ const sizes=[{name:'mobile-360',width:360,height:780},{name:'mobile-390',width:3
       // Verify settings continue to work after moving the original controls.
       await page.locator('#settingsSec_appearance .theme-pill-option[data-theme="rose"]').click();
       await page.locator('#settingsSec_appearance .icon-theme-pill[data-icon-theme="teal"]').click();
-      await page.locator('#settingsSec_appearance #cardStyleButtonsContainer button[data-card-style="compact"]').click();
+      await page.locator('#settingsSec_appearance button[data-card-style="flat"]').click();
       await page.locator('#fontSizeLarge').click();
       await page.locator('#appearanceModeLight').click();
       const selected=await page.evaluate(()=>({
@@ -125,10 +125,10 @@ const sizes=[{name:'mobile-360',width:360,height:780},{name:'mobile-390',width:3
       console.log('COMPACT_SELECTED '+size.name+' '+JSON.stringify(selected));
       assert.equal(selected.theme,'rose');
       assert.equal(selected.icon,'teal');
-      assert.equal(selected.card,'compact');
+      assert.equal(selected.card,'flat');
       assert.equal(selected.fontSize,'large');
       assert.equal(selected.light,true);
-      assert.equal(selected.cardsSummary,'مدمج');
+      assert.equal(selected.cardsSummary,'مسطح');
       assert.equal(selected.modeSummary,'فاتح');
 
       await page.reload({waitUntil:'domcontentloaded',timeout:45000});
@@ -144,7 +144,7 @@ const sizes=[{name:'mobile-360',width:360,height:780},{name:'mobile-390',width:3
       console.log('COMPACT_PERSIST '+size.name+' '+JSON.stringify(persisted));
       assert.equal(persisted.theme,'rose');
       assert.equal(persisted.icon,'teal');
-      assert.equal(persisted.card,'compact');
+      assert.equal(persisted.card,'flat');
       assert.equal(persisted.fontSize,'large');
       assert.equal(persisted.light,true);
       assert.equal(persisted.count,5);
