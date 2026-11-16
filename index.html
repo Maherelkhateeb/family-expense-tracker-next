@@ -30443,7 +30443,8 @@ function switchSettingsTab(tabName) {
       amber: { name: 'عنبر', dark: '#fdba74', light: '#9a3412' },
       teal: { name: 'تركوازي', dark: '#5eead4', light: '#0f766e' },
       indigo: { name: 'نيلي', dark: '#a5b4fc', light: '#3730a3' },
-      rose: { name: 'وردي', dark: '#f9a8d4', light: '#9d174d' }
+      rose: { name: 'وردي', dark: '#f9a8d4', light: '#9d174d' },
+      monochrome: { name: 'أحادي', dark: '#cbd5e1', light: '#475569' }
     };
 
     function appearanceContrastRatio(foreground, background) {
@@ -30528,7 +30529,7 @@ function switchSettingsTab(tabName) {
       document.body.setAttribute('data-theme', target);
 
       // تحديث فئات الـ body
-      const allThemeClasses = ['theme-navy', 'theme-emerald', 'theme-purple', 'theme-rose', 'theme-ocean', 'theme-gold', 'theme-slate', 'theme-midnight', 'theme-facebook'];
+      const allThemeClasses = Object.keys(APPEARANCE_PALETTES).map(key => 'theme-' + key);
       document.body.classList.remove(...allThemeClasses);
       document.body.classList.add('theme-' + target);
 
@@ -30842,11 +30843,11 @@ function switchSettingsTab(tabName) {
     }
 
     function setAppDesignStyle(style, notify = true, persist = true) {
-      const validStyles = ['facebook', 'glass', 'minimal', 'neumorphic', 'neon', 'clear', 'elevated', 'outlined', 'gradient'];
+      const validStyles = ['facebook', 'glass', 'minimal', 'neumorphic', 'neon', 'clear', 'flat', 'elevated', 'outlined', 'gradient'];
       const targetStyle = validStyles.includes(String(style || '')) ? String(style) : 'glass';
       document.documentElement.setAttribute('data-card-style', targetStyle);
       document.body.setAttribute('data-card-style', targetStyle);
-      document.querySelectorAll('#cardStyleButtonsContainer [data-card-style]').forEach(button => {
+      document.querySelectorAll('#settingsSec_appearance button[data-card-style]').forEach(button => {
         const selected = button.getAttribute('data-card-style') === targetStyle;
         button.classList.toggle('active', selected);
         button.setAttribute('aria-pressed', selected ? 'true' : 'false');
