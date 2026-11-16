@@ -26,6 +26,11 @@ const sizes=[{name:'mobile-360',width:360,height:780},{name:'mobile-390',width:3
           expanded:accordions.filter(x=>x.querySelector('.compact-appearance-panel').getBoundingClientRect().height>0).map(x=>x.dataset.appearanceSection),
           collapseControls:root.querySelectorAll('[aria-expanded]').length,
           dataVisible:root.getBoundingClientRect().height>0,
+          debug:{
+            classes:root.className,
+            directChildren:[...root.children].map(e=>({tag:e.tagName,id:e.id,cls:e.className})).slice(0,15),
+            overflow:[...root.querySelectorAll('*')].map(e=>{let b=e.getBoundingClientRect(),r=root.getBoundingClientRect();return{id:e.id,cls:typeof e.className==='string'?e.className.slice(0,70):'',left:Math.round(b.left),right:Math.round(b.right),visible:getComputedStyle(e).display!=='none'}}).filter(e=>e.visible && (e.left<root.getBoundingClientRect().left-3||e.right>root.getBoundingClientRect().right+3)).slice(0,18)
+          },
           height:Math.round(root.getBoundingClientRect().height),
           width:root.clientWidth, contentWidth:root.scrollWidth,
           viewportWidth:innerWidth, scrollWidth:document.documentElement.scrollWidth,
