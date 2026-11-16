@@ -46,9 +46,8 @@ assert.equal(api.stamp('2099-01-01T00:00:00.000Z'),null,'Reject future-dated quo
   assert.equal(offline.fromCache,true);
   assert.equal(offline.feed.checkedAt,oldFeed.checkedAt);
   values.clear();
-  const baseline=await api.load(storage,false);
-  assert.equal(baseline.offline,true,'When all providers fail, never mark baseline as live');
-  assert.equal(baseline.reason,'baseline');
-  console.log('PASS: current market-data API, live mocked prices, freshness, cache and visibly offline fallback');
+  const outage=await api.load(storage,false);
+  assert.equal(outage,null,'No fabricated market quote when both providers and local cache are unavailable');
+  console.log('PASS: current market-data API, live mocked prices, freshness, cache and no quotes when both sources and cache are unavailable');
  }finally{global.fetch=originalFetch}
 })().catch(e=>{console.error(e);process.exitCode=1});
