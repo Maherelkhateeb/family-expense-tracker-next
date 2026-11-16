@@ -79,7 +79,7 @@
         if (res && positive(res.price)) return res;
       } catch (e) {}
     }
-    return { price: 3840.50, open: 3830.00, chgVal: 10.50, chgPct: 0.27, at: new Date().toISOString(), source: 'سعر مرجعي للأونصة' };
+    return null; // No verified source: never invent a gold quote.
   }
 
   // Tiered FX rates fetcher (Fast Fawaz Ahmed Currency API -> Open ER-API -> FXRatesAPI -> Banque Misr baseline)
@@ -138,15 +138,7 @@
         if (res && positive(res.egp)) return res;
       } catch (e) {}
     }
-    // High-precision Banque Misr current official baseline fallback (Official rate: 53.84 EGP)
-    return {
-      egp: 53.84,
-      sar: 14.35,
-      eur: 59.22,
-      aed: 14.65,
-      at: new Date().toISOString(),
-      source: 'بنك مصر (الأسعار الرسمية المعتمدة)'
-    };
+    return null; // No verified FX source: never invent rates.
   }
 
   function getDailyOpens(storage) {
@@ -288,11 +280,8 @@
       return { feed: saved, offline: true, isLive: false, fromCache: true, reason: 'network_failed' };
     }
 
-    // Fallback baseline if first time offline (Banque Misr current official rate)
-    const baselineFx = { egp: 53.84, sar: 14.35, eur: 59.22, aed: 14.65, at: new Date().toISOString(), source: 'بنك مصر (السوق المصرفي الرسمي)' };
-    const baselineGold = { price: 3840.50, open: 3830.00, chgVal: 10.50, chgPct: 0.27, at: new Date().toISOString(), source: 'بورصة الذهب العالمية' };
-    const fallbackFeed = buildFeed(baselineFx, baselineGold, storage);
-    return { feed: fallbackFeed, offline: true, isLive: false, fromCache: true, reason: 'baseline' };
+    // No confirmed network or cache quote available.
+    return null;
   }
 
   return { positive, stamp, age, valid, load };

@@ -6,15 +6,19 @@ on:
       - fix/appearance-palettes-20261116
     paths:
       - index.html
+      - appearance-compact.css
       - appearance-compact.js
       - scripts/test-appearance-presets.js
       - scripts/test-mobile-appearance.cjs
+      - scripts/test-card-style-visual.cjs
       - .github/workflows/mobile-appearance-live.yml
   pull_request:
     paths:
       - index.html
+      - appearance-compact.css
       - scripts/test-appearance-presets.js
       - scripts/test-mobile-appearance.cjs
+      - scripts/test-card-style-visual.cjs
       - .github/workflows/mobile-appearance-live.yml
   workflow_dispatch:
 permissions:
@@ -43,3 +47,4 @@ jobs:
         run: |
           mkdir -p screenshots
           node scripts/test-mobile-appearance.cjs
+          node scripts/test-card-style-visual.cjs

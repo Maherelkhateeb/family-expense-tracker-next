@@ -57,13 +57,22 @@ jobs:
           APP_URL: http://127.0.0.1:8765/
         run: |
           mkdir -p screenshots
-          node scripts/test-compact-appearance.cjs
-          node scripts/test-summary-tight-filters.cjs
-          node scripts/test-control-alignment.cjs
-          node scripts/test-market-data.cjs
-          node scripts/test-project-budget.cjs
-          node scripts/test-gold-market.cjs
-          node scripts/test-mobile-appearance.cjs
+          status=0
+          for test in \
+            scripts/test-compact-appearance.cjs \
+            scripts/test-summary-tight-filters.cjs \
+            scripts/test-control-alignment.cjs \
+            scripts/test-market-data.cjs \
+            scripts/test-project-budget.cjs \
+            scripts/test-gold-market.cjs \
+            scripts/test-mobile-appearance.cjs \
+            scripts/test-card-style-visual.cjs
+          do
+            echo "::group::Checking $test"
+            node "$test" || status=1
+            echo "::endgroup::"
+          done
+          exit "$status"
       - name: Upload mobile screenshots
         if: always()
         uses: actions/upload-artifact@v4

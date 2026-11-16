@@ -1809,3 +1809,113 @@ body.light-theme .budget-chart-panel {
     grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
   }
 }
+
+
+/* Appearance engine v2 — 9 genuinely distinct card/list designs.
+   The previous style setting primarily changed body metadata, while legacy
+   card backgrounds and shadows masked most changes. Keep text/amount colors
+   controlled by existing contrast rules; modify only card surfaces. */
+body[data-card-style] {
+  --ux-card-solid:#17243a;
+  --ux-card-soft:#1d2d47;
+  --ux-card-glass:rgba(24,38,61,.82);
+  --ux-card-ink-border:#41536d;
+  --ux-card-accent:var(--appearance-accent-text,#38bdf8);
+  --ux-style-background:var(--ux-card-glass);
+  --ux-style-radius:16px;
+  --ux-style-border:1px solid var(--ux-card-ink-border);
+  --ux-style-shadow:0 6px 18px rgba(0,0,0,.22);
+  --ux-style-backdrop:blur(12px);
+}
+body.light-theme[data-card-style] {
+  --ux-card-solid:#ffffff;
+  --ux-card-soft:#edf4fb;
+  --ux-card-glass:rgba(255,255,255,.90);
+  --ux-card-ink-border:#c9d5e4;
+}
+body[data-card-style="minimal"] {
+  --ux-style-background:var(--ux-card-solid);
+  --ux-style-radius:8px;
+  --ux-style-border:1px solid var(--ux-card-ink-border);
+  --ux-style-shadow:none;
+  --ux-style-backdrop:none;
+}
+body[data-card-style="neumorphic"] {
+  --ux-style-background:var(--ux-card-soft);
+  --ux-style-radius:18px;
+  --ux-style-border:1px solid var(--ux-card-ink-border);
+  --ux-style-shadow:inset 2px 2px 4px rgba(0,0,0,.10),-4px -4px 10px rgba(255,255,255,.07),6px 8px 18px rgba(0,0,0,.20);
+  --ux-style-backdrop:none;
+}
+body.light-theme[data-card-style="neumorphic"] {
+  --ux-style-shadow:inset 2px 2px 4px rgba(68,85,108,.10),-5px -5px 12px #fff,6px 8px 16px rgba(31,41,55,.14);
+}
+body[data-card-style="neon"] {
+  --ux-style-background:var(--ux-card-solid);
+  --ux-style-radius:13px;
+  --ux-style-border:2px solid var(--ux-card-accent);
+  --ux-style-shadow:0 0 0 1px color-mix(in srgb,var(--ux-card-accent) 30%,transparent),0 0 18px color-mix(in srgb,var(--ux-card-accent) 32%,transparent);
+  --ux-style-backdrop:none;
+}
+body[data-card-style="clear"] {
+  --ux-style-background:var(--ux-card-glass);
+  --ux-style-radius:10px;
+  --ux-style-border:1px solid transparent;
+  --ux-style-shadow:none;
+  --ux-style-backdrop:none;
+}
+body[data-card-style="flat"] {
+  --ux-style-background:var(--ux-card-solid);
+  --ux-style-radius:6px;
+  --ux-style-border:1px solid var(--ux-card-ink-border);
+  --ux-style-shadow:none;
+  --ux-style-backdrop:none;
+}
+body[data-card-style="elevated"] {
+  --ux-style-background:var(--ux-card-solid);
+  --ux-style-radius:17px;
+  --ux-style-border:1px solid var(--ux-card-ink-border);
+  --ux-style-shadow:0 14px 30px rgba(0,0,0,.30),0 4px 8px rgba(0,0,0,.12);
+  --ux-style-backdrop:none;
+}
+body.light-theme[data-card-style="elevated"] { --ux-style-shadow:0 14px 30px rgba(15,23,42,.18),0 4px 8px rgba(15,23,42,.07); }
+body[data-card-style="outlined"] {
+  --ux-style-background:var(--ux-card-solid);
+  --ux-style-radius:12px;
+  --ux-style-border:2px dashed var(--ux-card-accent);
+  --ux-style-shadow:none;
+  --ux-style-backdrop:none;
+}
+body[data-card-style="gradient"] {
+  --ux-style-background:linear-gradient(135deg,color-mix(in srgb,var(--ux-card-accent) 19%,var(--ux-card-solid)),var(--ux-card-solid) 78%);
+  --ux-style-radius:19px;
+  --ux-style-border:1px solid color-mix(in srgb,var(--ux-card-accent) 36%,var(--ux-card-ink-border));
+  --ux-style-shadow:0 8px 21px rgba(0,0,0,.20);
+  --ux-style-backdrop:none;
+}
+/* Affect real application cards, financial lists, category tiles and the modal preview.
+   This selector has sufficient specificity to win over the old generic rules. */
+html body[data-card-style] #appFrame :is(
+  .app-card-panel,.history-card,.summary-card,.summary-kpi,.summary-group-row,
+  .summary-category-row,.tx-row,.ops-tx-card-clean,.ops-tx-card-lux,
+  .expected-clean-card,.exp-kpi-card,.exp-cockpit-card,.budget-item-card,
+  .req-alloc-card-item,.chart-block,.kpi-master-wealth-cockpit,.cat-card
+),
+html body[data-card-style] #topKpiThreeStrip {
+  background:var(--ux-style-background) !important;
+  border:var(--ux-style-border) !important;
+  border-radius:var(--ux-style-radius) !important;
+  box-shadow:var(--ux-style-shadow) !important;
+  -webkit-backdrop-filter:var(--ux-style-backdrop) !important;
+  backdrop-filter:var(--ux-style-backdrop) !important;
+}
+html body[data-card-style] #settingsModal #settingsThemePreview .settings-live-preview-card {
+  background:var(--ux-style-background) !important;
+  border:var(--ux-style-border) !important;
+  border-radius:var(--ux-style-radius) !important;
+  box-shadow:var(--ux-style-shadow) !important;
+  -webkit-backdrop-filter:var(--ux-style-backdrop) !important;
+  backdrop-filter:var(--ux-style-backdrop) !important;
+}
+/* Preserve high-contrast category amount bands and the existing light/dark
+   label colors; styling intentionally does not affect their descendants. */

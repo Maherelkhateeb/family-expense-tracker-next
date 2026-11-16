@@ -158,3 +158,44 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install, {once:true});
   else install();
 })();
+
+
+/* Apply appearance tokens to cards built with legacy inline !important styles.
+ * Only visual properties are affected; transaction data and amounts stay intact. */
+(function () {
+  'use strict';
+  function installVisualCardSync() {
+    var grid = document.getElementById('catGrid');
+    if (!grid || grid.dataset.visualStyleSync === '1') return;
+    grid.dataset.visualStyleSync = '1';
+    var properties = {
+      'background': '--ux-style-background',
+      'border': '--ux-style-border',
+      'border-radius': '--ux-style-radius',
+      'box-shadow': '--ux-style-shadow',
+      'backdrop-filter': '--ux-style-backdrop',
+      '-webkit-backdrop-filter': '--ux-style-backdrop'
+    };
+    function update() {
+      grid.querySelectorAll('.cat-card').forEach(function (card) {
+        Object.keys(properties).forEach(function (property) {
+          var value = 'var(' + properties[property] + ')';
+          if (card.style.getPropertyValue(property) !== value ||
+              card.style.getPropertyPriority(property) !== 'important') {
+            card.style.setProperty(property, value, 'important');
+          }
+        });
+      });
+    }
+    new MutationObserver(update).observe(grid, {childList:true, subtree:true});
+    new MutationObserver(update).observe(document.body, {
+      attributes:true, attributeFilter:['data-card-style','class']
+    });
+    update();
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', installVisualCardSync, {once:true});
+  } else {
+    installVisualCardSync();
+  }
+})();
