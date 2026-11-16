@@ -16212,8 +16212,8 @@ body.light-theme #tasksFullScreenModal input#tasksSearchInput {
     <!-- Accessible compact settings UI, independent of financial data scripts -->
   <script src="./market-data.js?v=202611151830"></script>
   <link rel="stylesheet" href="./gold-market.css?v=20261114-calc-polish3">
-  <link rel="stylesheet" href="./appearance-compact.css?v=20261114-antigravity-9matrix">
-  <script src="./appearance-compact.js?v=20261114-antigravity-9matrix" defer></script>
+  <link rel="stylesheet" href="./appearance-compact.css?v=20261117-card-visual-v2">
+  <script src="./appearance-compact.js?v=20261117-card-visual-v2" defer></script>
   <link rel="stylesheet" href="./ledger-task-layout.css?v=20261114-task-compact">
   <script src="./operation-filters.js?v=20261114"></script>
   <script src="./family-alerts.js?v=20261114-checkbox-box"></script>
@@ -27628,14 +27628,22 @@ function loadMoreOperations() {
 
       // 4. إعادة ضبط فلتر المشاريع والأفراد العام
       state.projectFilter = 'all';
+      state.currentMemberFilter = 'الكل';
+      state.selectedMember = 'الكل';
+      state.currentWalletId = 'all';
+      const walletSelect = document.getElementById('activeWalletSelect');
+      if (walletSelect && Array.from(walletSelect.options).some(o => o.value === 'all')) walletSelect.value = 'all';
+      document.querySelectorAll('.avatar-card').forEach(card => {
+        card.classList.toggle('active', card.getAttribute('data-member') === 'الكل');
+      });
       if (typeof refreshProjectSelectors === 'function') refreshProjectSelectors();
 
       // 5. مسح النطاق المخصص للتاريخ إن وجد والعودة للشهر الافتراضي
       state.customDateRange = null;
       if (typeof setAppPeriod === 'function') {
-        setAppPeriod('month', false);
+        setAppPeriod('all', false);
       } else {
-        state.period = 'month';
+        state.period = 'all';
       }
 
       // 6. تحديث قائمة العمليات المسجلة فوراً
