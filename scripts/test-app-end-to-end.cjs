@@ -131,6 +131,16 @@ const URL=process.env.APP_URL || 'http://127.0.0.1:8765/';
    assert.equal(persisted.sentinel,'preserved','Other local storage was corrupted');
    assert.ok(persisted.alerts>=6,'Alerts lost on reload');
    assert.ok(persisted.width<=persisted.viewport+4,'Horizontal page overflow after reload');
+   // Deleting every task must remain an empty list; demo tasks must not respawn.
+   const emptyCount=await page.evaluate(()=>{
+     const previous=localStorage.getItem('family_monefy_tasks');
+     localStorage.setItem('family_monefy_tasks','[]');
+     const result=getTodoTasks().length;
+     if(previous===null)localStorage.removeItem('family_monefy_tasks');
+     else localStorage.setItem('family_monefy_tasks',previous);
+     return result;
+   });
+   assert.equal(emptyCount,0,'Deleted tasks were silently re-seeded');
    assert.deepEqual(errors,[],'Uncaught JS exceptions '+JSON.stringify(errors));
    await ctx.close();
   }
