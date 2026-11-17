@@ -305,6 +305,20 @@
     root.style.setProperty('--settings-shell-light','linear-gradient(165deg,#ffffff,'+colors[2]+')');
     root.style.setProperty('--settings-head-dark','linear-gradient(135deg,'+colors[1]+',#1d2940)');
     root.style.setProperty('--settings-head-light','linear-gradient(135deg,#ffffff,'+colors[2]+')');
+    // Legacy inline !important styles otherwise leave the actual modal shell
+    // white/dark-navy regardless of the selected application palette.
+    const light=document.body.classList.contains('light-theme');
+    const shell=root.querySelector('.settings-modal-shell.antigravity-settings-shell');
+    const head=root.querySelector('.antigravity-settings-head');
+    if(shell){
+      shell.style.setProperty('background',light
+        ? 'linear-gradient(165deg,#ffffff,'+colors[2]+')'
+        : 'linear-gradient(165deg,'+colors[1]+',#101b2d)','important');
+      shell.style.setProperty('border-color',colors[0]+'75','important');
+    }
+    if(head)head.style.setProperty('background',light
+      ? 'linear-gradient(135deg,#ffffff,'+colors[2]+')'
+      : 'linear-gradient(135deg,'+colors[1]+',#1d2940)','important');
   }
   function schedule() {
     if (queued) return;
@@ -449,10 +463,12 @@
   function gotoBudgetTab(source) {
     if(typeof switchAppPage==='function')switchAppPage('budgets',true);
     if(typeof switchBudgetSubTab==='function') {
-      try{switchBudgetSubTab(source==='compare'?'comparisons':'monthly');}catch(e){}
+      try{switchBudgetSubTab(source==='executive'?'comparisons':'current');}catch(e){}
     }
-    if(source==='compare' && typeof BudgetCompareEngine!=='undefined')
-      try{BudgetCompareEngine.render();}catch(e){}
+    if(source==='compare'){
+      if(typeof switchBudgetMonthView==='function')switchBudgetMonthView('compare');
+      if(window.BudgetCompareEngine)try{BudgetCompareEngine.render();}catch(e){}
+    }
     if(source!=='compare' && window.BudgetAuditEngine)
       try{BudgetAuditEngine.refreshActiveBudgetAudit();}catch(e){}
   }
@@ -549,7 +565,8 @@
        !document.getElementById('panelMonthlyBudget')?.contains(event.target) &&
        !document.getElementById('panelBudgetComparisons')?.contains(event.target))return;
     event.preventDefault();event.stopImmediatePropagation();
-    const source=compareRow||event.target.closest('#panelBudgetComparisons')?'compare':'monthly';
+    const source=(compareRow || event.target.closest('#panelBudgetCompare')) ? 'compare' :
+      (event.target.closest('#panelBudgetComparisons') ? 'executive' : 'monthly');
     const a={source,originNode:scopeButton||auditRow||compareRow||week||over||basic};
     if(auditRow){
       a.itemIndex=Number(auditRow.dataset.budgetItemIndex);
