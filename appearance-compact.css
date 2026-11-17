@@ -1967,3 +1967,21 @@ button.monthly-insight-card {font:inherit;text-align:right;color:inherit;width:1
   #settingsModal .antigravity-palette-grid .theme-pill-option {padding:2px 1px !important}
   #settingsModal .antigravity-palette-grid .theme-pill-option span {font-size:.55rem !important}
 }
+
+
+/* The current settings modal is rendered with both compact and legacy shells.
+   Apply the palette to whichever shell is actually present in this build. */
+#settingsModal :is(.settings-modal-shell,.antigravity-settings-shell,.modal-content-card,.antigravity-settings-body) {
+  border-color:var(--settings-card-border) !important;
+}
+#settingsModal :is(.settings-modal-shell,.antigravity-settings-shell,.modal-content-card) {
+  background:var(--settings-shell-dark) !important;
+}
+body.light-theme #settingsModal :is(.settings-modal-shell,.antigravity-settings-shell,.modal-content-card) {
+  background:var(--settings-shell-light) !important;
+}
+#settingsModal .antigravity-palette-grid > .theme-pill-option {
+  grid-column:auto !important;
+  grid-row:auto !important;
+  align-self:stretch !important;
+}
