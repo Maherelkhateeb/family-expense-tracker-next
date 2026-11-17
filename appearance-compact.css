@@ -1952,7 +1952,7 @@ body:not(.light-theme) #budgetDrilldownBanner button {
 .monthly-week-line[data-budget-week],.monthly-overrun-list [data-budget-cat] {
   cursor:pointer;
 }
-button.monthly-insight-card {font:inherit;text-align:right;color:inherit;width:100%}
+button.monthly-insight-card {font:inherit;text-align:start;color:inherit;width:100%}
 .monthly-insight-card[data-budget-drill-scope]:focus-visible,
 .budget-audit-row:focus-visible,
 .monthly-week-line[data-budget-week]:focus-visible {
