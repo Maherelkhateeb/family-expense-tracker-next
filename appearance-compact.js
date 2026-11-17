@@ -252,6 +252,7 @@
 (function () {
   'use strict';
   const palette = {
+    facebook:['#0866ff','#102c55','#edf3ff'],
     navy:['#2563eb','#0c2145','#f1f6ff'],
     emerald:['#059669','#0b3635','#ebfaf4'],
     purple:['#7c3aed','#30164f','#f5efff'],
