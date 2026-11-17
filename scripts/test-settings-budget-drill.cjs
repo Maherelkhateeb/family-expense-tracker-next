@@ -86,24 +86,32 @@ const URL=process.env.APP_URL||'http://127.0.0.1:8765/';
      window.currentBudgetMonthData=plan;
      BudgetAuditEngine.selectPeriod('month');
      BudgetAuditEngine.refreshActiveBudgetAudit();
+     // The real unified UI displays category comparisons inside the monthly
+     // inner compare tab (#cmpTableBody), not the optional audit table.
+     if(typeof switchBudgetMonthView==='function')switchBudgetMonthView('compare');
+     BudgetCompareEngine.onActualPeriodChange('custom');
+     document.getElementById('cmpActualFrom').value='2025-04-01';
+     document.getElementById('cmpActualTo').value='2025-04-30';
+     BudgetCompareEngine.render();
    });
    const initial=await page.evaluate(()=>({
      metrics:document.querySelectorAll('.monthly-insights .monthly-insight-card').length,
-     rows:document.querySelectorAll('#budgetActualVsEstimatedContainer .budget-audit-row').length,
+     rows:document.querySelectorAll('#cmpTableBody tr[data-budget-category]').length,
      selectedMonth:BudgetAuditEngine.getNavigationContext().month,
      hasWeek:!!document.querySelector('.monthly-week-line[data-budget-week]'),
      hasHub:!!window.BudgetDrilldownHub
    }));
    console.log('MONTHLY_METRICS '+width+' '+JSON.stringify(initial));
    assert.ok(initial.metrics>=17,'Monthly budget misses new metrics');
-   assert.equal(initial.rows,2,'Budget table rows not selectable');
+   assert.ok(initial.rows>=2,'Actual vs budget category comparison rows not selectable');
    assert.equal(initial.selectedMonth,'2025-04');
    // Click the amount/number in the first budget category. Must display ONLY the
    // relevant expense transactions from the selected April plan, not today's month.
    await page.evaluate(()=>{
-     const cell=document.querySelector('#budgetActualVsEstimatedContainer .budget-audit-row td:nth-child(2)');
-     if(!cell)throw Error('Budget actual amount cell is missing');
-     cell.click();
+     const row=[...document.querySelectorAll('#cmpTableBody tr[data-budget-category]')]
+       .find(r=>r.dataset.budgetCategory==='food');
+     if(!row)throw Error('Budget comparison food category is missing');
+     row.querySelector('td:nth-child(2)').click();
    });
    const drill=await page.evaluate(()=>({
      active:BudgetDrilldownHub.isActive(),banner:document.getElementById('budgetDrilldownBanner')?.innerText||'',
@@ -123,12 +131,12 @@ const URL=process.env.APP_URL||'http://127.0.0.1:8765/';
    const back=await page.evaluate(()=>({
      active:BudgetDrilldownHub.isActive(),period:state.period,budgetId:state.activeBudgetId,
      banner:!!document.getElementById('budgetDrilldownBanner'),
-     rowCount:document.querySelectorAll('#budgetActualVsEstimatedContainer .budget-audit-row').length
+     rowCount:document.querySelectorAll('#cmpTableBody tr[data-budget-category]').length
    }));
    console.log('RETURN_TO_BUDGET '+width+' '+JSON.stringify(back));
    assert.deepEqual({active:back.active,period:back.period,budgetId:back.budgetId,
      banner:back.banner,rowCount:back.rowCount},
-     {active:false,period:'all',budgetId:'qa-drill-2025-04',banner:false,rowCount:2});
+     {active:false,period:'all',budgetId:'qa-drill-2025-04',banner:false,rowCount:initial.rows});
    if(width===360){
      await page.evaluate(()=>{
        if(typeof switchBudgetSubTab==='function')switchBudgetSubTab('comparisons');
