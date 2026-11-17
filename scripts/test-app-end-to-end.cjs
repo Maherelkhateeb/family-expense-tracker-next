@@ -70,7 +70,7 @@ const URL=process.env.APP_URL || 'http://127.0.0.1:8765/';
    });
    console.log('ALERT_QA '+width+' '+JSON.stringify(alerts));
    for(const k of ['added','edited','deleted','read','unread'])assert.equal(alerts[k],true,'Alert regression '+k);
-   assert.ok(alerts.body.includes('١٠٠')&&alerts.body.includes('15:34'.replace('15','٣').replace('34','٣٤').slice(0,1)),
+   assert.ok(alerts.body.includes('١٠٠')&&alerts.body.includes('٣:٣٤'),
      'Alert amount or timestamp missing: '+alerts.body);
    assert.ok(alerts.modifiedBody.includes('١٥٠'),'Edited amount not reflected');
    for(const k of ['expense','edit','delete','request','budget','task']) assert.ok(alerts.kinds.includes(k),'Missing kind '+k);
