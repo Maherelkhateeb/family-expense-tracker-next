@@ -72,6 +72,12 @@ try{
  await page.waitForFunction(()=>typeof MarketData?.load==='function');
  await page.locator('#btnOpenGold').click();
  await page.waitForFunction(()=>document.getElementById('tvUpdateTime').dataset.status==='stale',null,{timeout:20000});
+ // The offline status badge may update before unavailable placeholders paint.
+ // Check that the user can actually see the fallback, not just the badge.
+ await page.waitForFunction(() => {
+  const amount=document.getElementById('tvGold21Val');
+  return !!amount && amount.getClientRects().length>0 && amount.innerText.trim()==='—';
+ },null,{timeout:20000});
  assert.equal((await page.locator('#tvGold21Val').innerText()).trim(),'—');
  assert.match(await page.locator('#calcFinalTotal').innerText(),/غير متاح/);
  console.log('PASS complete source outage: unavailable placeholders, no synthetic quotes');
