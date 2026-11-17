@@ -76,7 +76,23 @@ const URL=process.env.APP_URL || 'http://127.0.0.1:8765/';
    for(const k of ['expense','edit','delete','request','budget','task']) assert.ok(alerts.kinds.includes(k),'Missing kind '+k);
    assert.ok(alerts.alerts>=6 && alerts.rendered>=6,'Alert list did not render every event');
 
-   await page.evaluate(()=>openTasksFullScreenModal());
+   await page.evaluate(()=>{
+     openTasksFullScreenModal();
+     if(typeof switchTasksViewMode==='function')switchTasksViewMode('list');
+   });
+   const taskDiag=await page.evaluate(()=>{
+     const title=document.getElementById('quickTaskTitleInput');
+     const parents=[];let el=title;
+     for(let i=0;i<8&&el;i++,el=el.parentElement){
+       const cs=getComputedStyle(el),rect=el.getBoundingClientRect();
+       parents.push({id:el.id,cls:String(el.className).slice(0,80),
+         display:cs.display,visibility:cs.visibility,hidden:el.hidden,
+         width:Math.round(rect.width),height:Math.round(rect.height)});
+     }
+     return {parents,activeModal:document.querySelector('.modal.active')?.id||'',
+       taskModal:document.getElementById('tasksFullScreenModal')?.className||''};
+   });
+   console.log('TASK_VISIBILITY_DIAGNOSTIC '+width+' '+JSON.stringify(taskDiag));
    const title=page.locator('#quickTaskTitleInput');
    assert.equal(await title.count(),1,'Quick task creator missing');
    await title.fill('تجربة QA شاملة '+width);
