@@ -24,7 +24,13 @@ const URL=process.env.APP_URL||'http://127.0.0.1:8765/';
      const palette=buttons[0]?.closest('.antigravity-palette-grid,.appearance-palette-grid');
      const raf=()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
      const rects=buttons.map(b=>b.getBoundingClientRect());
-     const rows=[...new Set(rects.map(r=>Math.round(r.top)))];
+     // Active palette buttons are visually translated by ~1.5px; group rows
+     // within 5px to distinguish actual grid rows from decorative selection lift.
+     const rows=[];
+     for(const r of rects){
+       const row=rows.find(x=>Math.abs(x.y-r.top)<5);
+       if(row)row.count++; else rows.push({y:r.top,count:1});
+     }
      const themeSamples=[],iconSamples=[],styleSamples=[];
      for(const btn of buttons){
        btn.click();await raf();
@@ -39,7 +45,7 @@ const URL=process.env.APP_URL||'http://127.0.0.1:8765/';
          colour:root.style.getPropertyValue('--settings-icon')});
      }
      for(const btn of styles){
-       btn.click();await raf();
+       btn.click();await raf();await new Promise(resolve=>setTimeout(resolve,240));
        const panel=root.querySelector('.antigravity-card-block');
        styleSamples.push({name:btn.dataset.cardStyle,style:root.dataset.settingsCardStyle,
          radius:panel&&getComputedStyle(panel).borderRadius,
@@ -47,7 +53,7 @@ const URL=process.env.APP_URL||'http://127.0.0.1:8765/';
      }
      return {counts:[buttons.length,icons.length,styles.length],
        columns:palette&&getComputedStyle(palette).gridTemplateColumns.split(/\s+/).length,
-       rows:rows.length,choicesPerRow:rows.map(y=>rects.filter(r=>Math.round(r.top)===y).length),
+       rows:rows.length,choicesPerRow:rows.map(x=>x.count),
        themeSamples,iconSamples,styleSamples,
        scrollWidth:document.documentElement.scrollWidth,viewport:innerWidth};
    });
