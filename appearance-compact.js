@@ -308,7 +308,7 @@
   function schedule() {
     if (queued) return;
     queued = true;
-    requestAnimationFrame(function () {requestAnimationFrame(app);});
+    requestAnimationFrame(function () {requestAnimationFrame(apply);});
   }
   function init() {
     const root = document.getElementById('settingsModal');
