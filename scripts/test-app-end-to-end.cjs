@@ -99,10 +99,12 @@ const URL=process.env.APP_URL || 'http://127.0.0.1:8765/';
    const title=page.locator('#quickTaskTitleInput');
    assert.equal(await title.count(),1,'Quick task creator missing');
    await title.fill('تجربة QA شاملة '+width);
-   const date=page.locator('#inlineTaskDueDate');
-   if(await date.count()) await date.fill('2026-11-18');
-   const tm=page.locator('#inlineTaskDueTime');
-   if(await tm.count()) await tm.fill('17:00');
+   // Dates and times are selected through the visible preset chips.
+   // The underlying date/time inputs are intentionally hidden.
+   const datePreset=page.locator('#inlineDatePresetGroup [data-preset="tomorrow"]');
+   if(await datePreset.count()) await datePreset.click();
+   const timePreset=page.locator('#inlineTimePresetGroup [data-time="17:00"]');
+   if(await timePreset.count()) await timePreset.click();
    const member=page.locator('#inlineTaskMemberGroup [data-member="ماهر"]');
    if(await member.count())await member.click();
    const submit=page.locator('#btnSubmitUnifiedTask');
