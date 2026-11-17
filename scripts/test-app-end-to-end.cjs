@@ -80,6 +80,9 @@ const URL=process.env.APP_URL || 'http://127.0.0.1:8765/';
      openTasksFullScreenModal();
      if(typeof switchTasksViewMode==='function')switchTasksViewMode('list');
    });
+   // The creator is intentionally collapsed until the user presses Add Task.
+   await page.locator('#btnHeroAddTaskBar').click({timeout:10000});
+   await page.locator('#tasksUnifiedCreatorCard').waitFor({state:'visible',timeout:10000});
    const taskDiag=await page.evaluate(()=>{
      const title=document.getElementById('quickTaskTitleInput');
      const parents=[];let el=title;
