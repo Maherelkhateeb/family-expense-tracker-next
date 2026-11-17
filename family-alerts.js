@@ -83,7 +83,7 @@ const familyAlerts = (() => {
         const day = Number(match[3]);
         let h = recorded ? recorded.getHours() : 12;
         let m = recorded ? recorded.getMinutes() : 0;
-        const explicitTime = /^([01]\d|2[0-3]):([0-5]\d)/.exec(String(tx.time || '').trim());
+        const explicitTime = /^([01]?\d|2[0-3]):([0-5]\d)/.exec(String(tx.time || '').trim());
         if (explicitTime) {
           h = Number(explicitTime[1]); // 00:xx must remain midnight, not noon.
           m = Number(explicitTime[2]);
