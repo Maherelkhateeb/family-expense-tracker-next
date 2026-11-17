@@ -1671,7 +1671,7 @@ const BudgetCompareEngine = (() => {
           }
 
           return `
-            <tr style="border-bottom: 1px solid rgba(255,255,255,0.06); cursor: pointer; transition: background 0.15s;"
+            <tr data-budget-category="${escapeHtml(r.catKey)}" style="border-bottom: 1px solid rgba(255,255,255,0.06); cursor: pointer; transition: background 0.15s;"
                 onclick="BudgetCompareEngine.drillDownToCategory('${r.catKey}')"
                 title="اضغط لعرض كافة حركات ${catObj.name} المفلترة"
                 onmouseover="this.style.background='rgba(56,189,248,0.08)'"
@@ -1805,8 +1805,50 @@ const BudgetCompareEngine = (() => {
     }
 
 
+    // Extra verified actuals vs plan insights.
+    renderExtraComparisonMetrics(rowsData, actRange, totEstim, totActual);
     // Render 3 Charts
     renderCharts(rowsData, actData, totEstim, actRange.from, actRange.to);
+  }
+
+
+  function renderExtraComparisonMetrics(rowsData, range, budgetAmount, actual) {
+    const table = document.getElementById('cmpTableBody')?.closest('table');
+    if (!table) return;
+    let slot = document.getElementById('cmpExtraInsightGrid');
+    if (!slot) {
+      slot = document.createElement('div');
+      slot.id = 'cmpExtraInsightGrid';
+      table.parentElement.insertAdjacentElement('afterend',slot);
+    }
+    const transactions=(state.transactions||[]).filter(t=>t.type==='expense'&&
+      String(t.date||'')>=range.from&&String(t.date||'')<=range.to);
+    const daily=new Map();
+    transactions.forEach(t=>daily.set(t.date,(daily.get(t.date)||0)+(Number(t.amount)||0)));
+    const highest=[...daily.entries()].sort((a,b)=>b[1]-a[1])[0]||['',0];
+    const avg=transactions.length?actual/transactions.length:0;
+    const unplanned=rowsData.filter(x=>x.estAmt===0&&x.actualAmt>0);
+    const top=rowsData.filter(x=>x.actualAmt>0).slice(0,3);
+    const concentration=actual>0?top.reduce((sum,x)=>sum+x.actualAmt,0)/actual*100:0;
+    const overCount=rowsData.filter(x=>x.actualAmt>x.estAmt).length;
+    const covered=rowsData.filter(x=>x.estAmt>0).length;
+    const fmt=n=>Number(n||0).toLocaleString('ar-EG',{maximumFractionDigits:0});
+    const card=(name,value,hint,scope='actual',attrs='')=>
+      '<button type="button" class="monthly-insight-card" data-budget-drill-scope="'+scope+'" '+attrs+
+      '><small>'+name+'</small><strong>'+value+'</strong><span>'+hint+' · اضغط للتفاصيل</span></button>';
+    slot.innerHTML='<div class="monthly-insights"><h3>مؤشرات إضافية للمقارنة</h3>'+
+      '<p>تحليلات العمليات الفعلية المسجلة خلال '+escapeHtml(range.from)+' إلى '+escapeHtml(range.to)+'.</p>'+
+      '<div class="monthly-insight-grid">'+
+      card('عدد العمليات',fmt(transactions.length),'مصروفات الفترة المختارة')+
+      card('متوسط العملية',fmt(avg),'متوسط قيمة المصروف المسجل')+
+      card('أيام الإنفاق الفعلي',fmt(daily.size),'عدد الأيام ذات المصروف')+
+      card('أعلى يوم إنفاق',fmt(highest[1]),escapeHtml(highest[0]),'highest-day','data-budget-date="'+escapeHtml(highest[0])+'"')+
+      card('حصة أكبر 3 فئات',concentration.toFixed(1)+'%','تركز الإنفاق الفعلي')+
+      card('الفئات المتجاوزة',fmt(overCount),'الأعلى من المقدر')+
+      card('فئات دون موازنة',fmt(unplanned.length),'مصروفات دون تقدير معتمد')+
+      card('الفئات ذات المخصص',fmt(covered),'المغطاة بموازنة تقديرية')+
+      card('نسبة استخدام التقديري',budgetAmount>0?(actual/budgetAmount*100).toFixed(1)+'%':'—','الفعلي ÷ المقدر')+
+      '</div></div>';
   }
 
   function renderCharts(rowsData, actData, totEstim, fromDate, toDate) {
@@ -1978,6 +2020,7 @@ const BudgetCompareEngine = (() => {
     onActualPeriodChange,
     onEstimPeriodChange,
     buildEstimPeriodOptions,
+    getNavigationRange: () => periodToRange(_actualPeriod, document.getElementById('cmpActualFrom')?.value, document.getElementById('cmpActualTo')?.value),
     drillDownToCategory
   };
 })();
