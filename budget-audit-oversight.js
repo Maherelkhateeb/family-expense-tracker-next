@@ -440,35 +440,54 @@
       }
     }
 
-    // رسم شريط أزرار الأرقام من 1 إلى 6
+    // رسم شريط أزرار المحاور الستة المتوازن 3x2 بنمط تنفيذي بدون أي تمرير
     function renderTabs() {
       const tabsContainer = document.getElementById('auditDeckTabs');
       if (!tabsContainer) return;
 
       const isLight = document.body.classList.contains('light-theme');
+      const pillarNames = {
+        1: 'تآكل السيولة',
+        2: 'توقيت الصرف',
+        3: 'سلوك الأفراد',
+        4: 'جودة المصروف',
+        5: 'أمان الديون',
+        6: 'الاستثمار والتحوط'
+      };
+
       let html = '';
       PILLARS.forEach(p => {
         const isActive = (p.id === currentPillar);
+        const name = pillarNames[p.id] || p.shortTitle || `المحور ${p.id}`;
         const bgStyle = isActive
-          ? `background: linear-gradient(135deg, ${p.themeColor}, #b91c1c); color: #fff; box-shadow: 0 2px 10px ${p.themeColor}55; border: 1.2px solid ${p.themeColor};`
+          ? `background: linear-gradient(135deg, ${p.themeColor}, #991b1b) !important; color: #ffffff !important; border-color: ${p.themeColor} !important; box-shadow: 0 2px 10px ${p.themeColor}66 !important; font-weight: 900 !important;`
           : (isLight
-            ? `background: #ffffff; color: #475569; border: 1px solid #cbd5e1; box-shadow: 0 1px 3px rgba(0,0,0,0.05);`
-            : `background: rgba(15, 23, 42, 0.7); color: #94a3b8; border: 1px solid rgba(255, 255, 255, 0.12);`);
+            ? `background: #ffffff !important; color: #475569 !important; border: 1px solid #cbd5e1 !important; box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;`
+            : `background: rgba(15, 23, 42, 0.65) !important; color: #94a3b8 !important; border: 1px solid rgba(255, 255, 255, 0.10) !important;`);
 
         html += `
           <button type="button" 
+                  role="tab"
                   class="audit-pill-btn ${isActive ? 'active' : ''}" 
                   id="btnAuditPillar${p.id}"
                   onclick="BudgetAuditOversightEngine.selectPillar(${p.id})"
-                  style="flex: 1; min-width: 44px; height: 36px; padding: 0 8px; border-radius: 9px; font-size: 0.76rem; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; transition: all 0.2s ease; ${bgStyle}"
+                  style="${bgStyle}"
+                  aria-selected="${isActive}"
                   title="${p.title}">
-            <span style="font-size: 0.86rem; font-family: monospace; font-weight: 900;">[ ${p.id} ]</span>
-            <span class="pillar-label-text" style="white-space: nowrap; font-size: 0.70rem; display: ${isActive ? 'inline' : 'none'};">${p.shortTitle.split('.')[1] || p.shortTitle}</span>
+            <span class="audit-tab-num">${p.id}.</span>
+            <span class="audit-tab-name">${name}</span>
           </button>
         `;
       });
 
       tabsContainer.innerHTML = html;
+
+      // تحديث عنوان الترويسة العلوية للمحور المختار
+      const activeP = PILLARS.find(x => x.id === currentPillar) || PILLARS[0];
+      const titleSpan = document.getElementById('auditActivePillarTitle');
+      if (titleSpan && activeP) {
+        titleSpan.textContent = `— المحور ${activeP.id}: ${activeP.title}`;
+      }
     }
 
     // رسم مسرح المحور المختار (Stage)
@@ -659,19 +678,22 @@
       }
     }
 
-    // تحديث نص زر الطي
+    // تحديث نص وزر طي المحور الرقابي
     function updateToggleBtnText() {
       const txt = document.getElementById('txtToggleAuditDeck');
+      const icon = document.getElementById('auditDeckToggleIcon');
       const btn = document.getElementById('btnToggleAuditDeck');
-      if (!txt || !btn) return;
+      if (!btn) return;
 
       if (isCollapsed) {
-        txt.innerHTML = '🔽 فتح المحور';
+        if (txt) txt.textContent = 'عرض المحور';
+        if (icon) icon.className = 'fa-solid fa-chevron-down';
         btn.style.background = 'rgba(16, 185, 129, 0.15)';
         btn.style.color = '#34d399';
         btn.style.borderColor = 'rgba(16, 185, 129, 0.35)';
       } else {
-        txt.innerHTML = '🔼 طي المحور';
+        if (txt) txt.textContent = 'طي المحور';
+        if (icon) icon.className = 'fa-solid fa-chevron-up';
         btn.style.background = 'rgba(239, 68, 68, 0.15)';
         btn.style.color = '#fca5a5';
         btn.style.borderColor = 'rgba(239, 68, 68, 0.35)';

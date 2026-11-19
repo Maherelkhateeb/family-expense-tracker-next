@@ -1835,11 +1835,9 @@
               </div>
               <div id="cmpSummary" aria-live="polite"></div>
               <div class="cmp-view-tools">
-                <div class="cmp-period-modes" role="group" aria-label="شكل عرض المقارنة">
-                  <button type="button" data-mode="table" aria-pressed="true">جدول البنود</button>
-                  <button type="button" data-mode="paired" aria-pressed="false">الأعمدة</button>
-                  <button type="button" data-mode="change" aria-pressed="false">التغيّر</button>
-                  <button type="button" id="cmpUnifiedShowAll" onclick="BudgetCompareEngine.showAllCharts()" title="فتح جميع الرسوم التسعة">الرسوم 1–9</button>
+                <div class="cmp-period-modes" role="group" aria-label="شكل عرض المقارنة" id="cmpPeriodModes">
+                  <button type="button" data-mode="table" class="active" aria-pressed="true" onclick="BudgetCompareEngine.switchMode('table')">جدول البنود</button>
+                  <button type="button" data-mode="charts" aria-pressed="false" id="cmpUnifiedShowAll" onclick="BudgetCompareEngine.switchMode('charts')" title="فتح منصة الرسوم البيانية الإحدى عشرة">الرسوم 1–11</button>
                 </div>
                 <label><span>ترتيب</span>
                   <select id="cmpSort" aria-label="ترتيب بنود المقارنة" onchange="BudgetCompareEngine.render()">
@@ -2145,16 +2143,26 @@
             </div>
           </div>
 
-          <!-- شريط الرقابة المدمج: اختيار المحور 1 - 6 مع زر الطي والفتح في نفس المكان -->
-          <div class="audit-deck-toolbar" style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 12px; padding: 6px 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; gap: 6px; flex-wrap: wrap;">
-            <!-- شريط الأرقام 1 إلى 6 -->
-            <div class="audit-deck-tabs" id="auditDeckTabs" role="tablist" aria-label="محاور الرقابة المالية الستة" style="display: flex; gap: 4px; overflow-x: auto; flex: 1; min-width: 240px; padding: 2px 0;">
+          <!-- شريط محاور الرقابة التنفيذي المطور (بدون أي شريط تمرير أو تكدس) -->
+          <div class="audit-deck-toolbar">
+            <!-- ترويسة شريط المحاور مع زر الطي والفتح الأنيق -->
+            <div class="audit-deck-header" style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; flex-wrap: wrap;">
+              <div style="display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1;">
+                <i class="fa-solid fa-shield-halved" style="color: #ef4444; font-size: 1.1rem; flex-shrink: 0;"></i>
+                <div style="min-width: 0;">
+                  <span style="font-weight: 900; font-size: 0.82rem; color: #f8fafc;">محاور الرقابة والتدقيق الجنائي</span>
+                  <span id="auditActivePillarTitle" style="display: inline-block; font-size: 0.72rem; font-weight: 700; color: #cbd5e1; margin-right: 6px; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom;">— المحور 1: التدقيق الجنائي للسيولة</span>
+                </div>
+              </div>
+              <button type="button" id="btnToggleAuditDeck" onclick="BudgetAuditOversightEngine.toggleDeck()" class="btn-deck-toggle" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.35); color: #fca5a5; font-size: 0.72rem; font-weight: 850; padding: 5px 12px; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; transition: all 0.2s ease; flex-shrink: 0;" title="طي أو توسيع المحور النشط">
+                <i id="auditDeckToggleIcon" class="fa-solid fa-chevron-up"></i>
+                <span id="txtToggleAuditDeck">طي المحور</span>
+              </button>
+            </div>
+            <!-- شبكة أزرار المحاور الستة المتوازنة 3x2 بدون أي تمرير أفقي نهائياً -->
+            <div class="audit-deck-tabs-grid" id="auditDeckTabs" role="tablist" aria-label="محاور الرقابة المالية الستة">
               <!-- تُنشأ أزرار 1 إلى 6 ديناميكياً بواسطة المحرك -->
             </div>
-            <!-- زر طي / فتح المحور في نفس الموضع -->
-            <button type="button" id="btnToggleAuditDeck" onclick="BudgetAuditOversightEngine.toggleDeck()" class="btn-deck-toggle" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.35); color: #fca5a5; font-size: 0.70rem; font-weight: 900; padding: 5px 11px; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; transition: all 0.2s ease;">
-              <span id="txtToggleAuditDeck">🔼 طي المحور</span>
-            </button>
           </div>
 
           <!-- مسرح المحور النشط (Single-Stage Deck) -->

@@ -722,10 +722,10 @@ body.light-theme .cmp-deck-tabs-strip {
 
 /* في مقارنات الشهر: 9 رسوم بيانية مقسمة 5 في السطر الأول و4 في السطر الثاني */
 #cmpChartsDeck .cmp-deck-tabs-strip .cmp-deck-tab {
-  flex: 1 1 calc(20% - 4px) !important;
+  flex: 1 1 calc(16.66% - 4px) !important;
 }
-#cmpChartsDeck .cmp-deck-tabs-strip .cmp-deck-tab:nth-child(n+6) {
-  flex: 1 1 calc(25% - 4px) !important;
+#cmpChartsDeck .cmp-deck-tabs-strip .cmp-deck-tab:nth-child(n+7) {
+  flex: 1 1 calc(20% - 4px) !important;
 }
 
 /* في قسم المشاريع: 11 رسم بياني مقسمة 6 في السطر الأول و5 في السطر الثاني */
@@ -1008,10 +1008,10 @@ body.light-theme .cmp-deck-tabs-strip {
 
 /* في مقارنات الشهر: 9 رسوم بيانية مقسمة 5 في السطر الأول و4 في السطر الثاني */
 #cmpChartsDeck .cmp-deck-tabs-strip .cmp-deck-tab {
-  flex: 1 1 calc(20% - 4px) !important;
+  flex: 1 1 calc(16.66% - 4px) !important;
 }
-#cmpChartsDeck .cmp-deck-tabs-strip .cmp-deck-tab:nth-child(n+6) {
-  flex: 1 1 calc(25% - 4px) !important;
+#cmpChartsDeck .cmp-deck-tabs-strip .cmp-deck-tab:nth-child(n+7) {
+  flex: 1 1 calc(20% - 4px) !important;
 }
 
 /* في قسم المشاريع: 11 رسم بياني مقسمة 6 في السطر الأول و5 في السطر الثاني */
@@ -1427,4 +1427,74 @@ body.light-theme .cmp-audit-compact-card {
 .cmp-acc-btn:hover {
   background: rgba(13, 148, 136, 0.18) !important;
   border-color: #0d9488 !important;
+}
+
+
+/* ==========================================================================
+   Forensic Audit Executive Deck Toolbar & Responsive 3x2 Grid (No Scrollbars)
+   ========================================================================== */
+.audit-deck-toolbar {
+  background: rgba(15, 23, 42, 0.88);
+  border: 1.2px solid rgba(239, 68, 68, 0.3);
+  border-radius: 14px;
+  padding: 10px 12px;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+body.light-theme .audit-deck-toolbar {
+  background: #f8fafc;
+  border-color: rgba(239, 68, 68, 0.35);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.audit-deck-tabs-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+  width: 100%;
+}
+
+@media (max-width: 720px) {
+  .audit-deck-tabs-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 6px !important;
+  }
+}
+
+.audit-pill-btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 5px !important;
+  min-height: 38px !important;
+  padding: 4px 8px !important;
+  border-radius: 9px !important;
+  font-size: 0.74rem !important;
+  font-weight: 850 !important;
+  cursor: pointer !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  white-space: nowrap !important;
+  text-decoration: none !important;
+  outline: none !important;
+}
+
+.audit-pill-btn .audit-tab-num {
+  font-family: monospace;
+  font-size: 0.82rem;
+  font-weight: 900;
+  opacity: 0.9;
+  flex-shrink: 0;
+}
+
+.audit-pill-btn .audit-tab-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.audit-pill-btn:hover {
+  transform: translateY(-1px);
 }

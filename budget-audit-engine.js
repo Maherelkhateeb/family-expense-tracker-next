@@ -1394,7 +1394,8 @@ const BudgetCompareEngine = (() => {
     house: 1000, daily: 950, health: 850, clothes: 650, other: 450
   };
 
-  // حالة منصة الرسوم البيانية التفاعلية المدمجة (1–8)
+  // حالة العرض ومنصة الرسوم البيانية التفاعلية المدمجة (1–11)
+  let _viewMode = 'table'; // الافتراضي: جدول البنود الأساسي
   let activeChartTab = 1;
   let isChartDeckCollapsed = false;
   let _currentChartsMap = {};
@@ -1408,13 +1409,56 @@ const BudgetCompareEngine = (() => {
     { id: 6, name: 'الحرارية', fullName: '6. الخريطة الحرارية للفترتين', icon: 'fa-table-cells', tip: 'مصفوفة بصرية لتقييم انحرافات كل بند عبر الفترات' },
     { id: 7, name: 'المكدس', fullName: '7. المكدس النسبي 100%', icon: 'fa-bars-progress', tip: 'توزيع حصص البنود كنسبة مئوية من إجمالي الإنفاق 100%' },
     { id: 8, name: 'الميل', fullName: '8. مخطط الميل والاتجاه', icon: 'fa-arrow-trend-up', tip: 'مخطط اتجاهي يوضح صعود أو هبوط تكلفة كل بند' },
-    { id: 9, name: 'فروق البنود', fullName: '9. الفروق حسب بنود المصروفات', icon: 'fa-scale-balanced', tip: 'مقارنة تفصيلية لفروق التقديري والفعلي لكل بند بالكروت المدمجة' }
+    { id: 9, name: 'فروق البنود', fullName: '9. الفروق حسب بنود المصروفات', icon: 'fa-scale-balanced', tip: 'مقارنة تفصيلية لفروق التقديري والفعلي لكل بند بالكروت المدمجة' },
+    { id: 10, name: 'الأعمدة', fullName: '10. أعمدة المقارنة المزدوجة (التقديري vs الفعلي)', icon: 'fa-chart-column', tip: 'أعمدة المقارنة المزدوجة الأفقية بين التقديري والفعلي لكل بند' },
+    { id: 11, name: 'التغيّر', fullName: '11. انحراف وتغير البنود عن التقديري', icon: 'fa-arrows-split-up-and-left', tip: 'انحراف وتغير البنود ونسب الوفر أو التجاوز' }
   ];
 
   function selectChartTab(chartNum) {
-    activeChartTab = Math.max(1, Math.min(9, parseInt(chartNum, 10) || 1));
+    activeChartTab = Math.max(1, Math.min(11, parseInt(chartNum, 10) || 1));
     isChartDeckCollapsed = false;
     renderActiveChartOnly();
+  }
+
+  function switchMode(mode) {
+    if (mode === 'paired') {
+      _viewMode = 'charts';
+      activeChartTab = 10;
+      isChartDeckCollapsed = false;
+    } else if (mode === 'change') {
+      _viewMode = 'charts';
+      activeChartTab = 11;
+      isChartDeckCollapsed = false;
+    } else {
+      _viewMode = mode;
+      if (mode === 'charts') {
+        isChartDeckCollapsed = false;
+      }
+    }
+    periodChartMode = _viewMode;
+    const strip = document.getElementById('cmpPeriodModes');
+    if (strip) {
+      strip.querySelectorAll('button[data-mode]').forEach(btn => {
+        const active = (btn.dataset.mode === _viewMode);
+        btn.classList.toggle('active', active);
+        btn.setAttribute('aria-pressed', String(active));
+      });
+    }
+    render();
+    if (_viewMode === 'charts') {
+      const deck = document.getElementById('cmpChartsDeck');
+      if (deck) {
+        const stage = document.getElementById('cmpDeckStage');
+        if (stage) stage.classList.remove('is-collapsed');
+        const btnIcon = document.getElementById('cmpDeckToggleIcon');
+        const btnLabel = document.getElementById('cmpDeckToggleLabel');
+        if (btnIcon && btnLabel) {
+          btnIcon.className = 'fa-solid fa-chevron-up';
+          btnLabel.textContent = 'طي الرسم';
+        }
+        deck.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    }
   }
 
   function renderActiveChartOnly() {
@@ -1422,7 +1466,7 @@ const BudgetCompareEngine = (() => {
     const title = document.getElementById('cmpActiveChartTitle');
     const subtitle = document.getElementById('cmpActiveChartSubtitle');
     const icon = document.querySelector('#cmpChartsDeck .cmp-deck-title i');
-    const tabs = document.querySelectorAll('.cmp-deck-tab');
+    const tabs = document.querySelectorAll('#cmpChartsDeck .cmp-deck-tab');
     if (stage && _currentChartsMap && _currentChartsMap[activeChartTab]) {
       stage.innerHTML = _currentChartsMap[activeChartTab];
       stage.classList.remove('is-collapsed');
@@ -2132,13 +2176,62 @@ const BudgetCompareEngine = (() => {
       </section>
     `;
 
+    // 10. أعمدة المقارنة المزدوجة الأفقية بين التقديري والفعلي
+    const maxVal10 = sorted.reduce((limit, row) => Math.max(limit, row.a, row.b || 0), 0);
+    const minVal10 = sorted.reduce((limit, row) => Math.min(limit, row.a, row.b || 0), 0);
+    const span10 = Math.max(1, maxVal10 - minVal10);
+    const zero10 = -minVal10 / span10 * 100;
+    const chart10Rows = sorted.map((row, index) => {
+      const bar = (key, series) => '<div class="cmp-column-' + series + '">' +
+        (row[key] ? '<i style="--start:' + (Math.min(0, row[key]) - minVal10) / span10 * 100 +
+          '%;--height:' + Math.abs(row[key]) / span10 * 100 + '%"></i>' : '') + '</div>';
+      return '<li data-budget-category="' + safe(row.id) + '"><div class="cmp-period-track cmp-column-plot" aria-hidden="true">' +
+        bar('a', 'actual') + bar('b', 'reference') + '</div><div class="cmp-column-values"><span class="cmp-series-actual" title="' +
+        actualLabel + '">' + fmt(row.a) + '</span><span class="cmp-series-reference" title="' +
+        referenceLabel + '">' + fmt(row.b || 0) + '</span></div><strong><span class="cmp-rank">' + (index + 1) + '</span> ' + safe(row.name) + '</strong></li>';
+    }).join('');
+    const chart10Html = `
+      <section class="bs-panel bs-full">
+        <h3>10. أعمدة المقارنة المزدوجة (${safe(referenceLabel)} vs ${safe(actualLabel)})</h3>
+        <div class="cmp-scale-key" style="margin-bottom:10px;"><span class="cmp-key-actual">${safe(actualLabel)}</span><span class="cmp-key-reference">${safe(referenceLabel)}</span></div>
+        <ul class="cmp-column-chart" style="--zero:${zero10}%">${chart10Rows}</ul>
+        ${chartExplanation("أعمدة أفقية مزدوجة تقارن كل بند بشكل مباشر بين المعتمد التقديري والصرف الفعلي جنبًا إلى جنب مع القيم الرقمية.", "العمود الأخضر المزرق يمثل الفعلي والأزرق يمثل التقديري؛ يمكنك التدقيق في كل بند بشكل منفصل.")}
+      </section>
+    `;
+
+    // 11. انحراف وتغير البنود عن التقديري
+    const maxDelta11 = sorted.reduce((max, row) => Math.max(max, Math.abs(row.diff)), 1);
+    const chart11Rows = sorted.map((row, index) => {
+      const share = Math.abs(row.diff) / maxDelta11 * 50;
+      const ratio = percentValue(row.diff, row.b || 0);
+      const tone = row.diff > 0 ? 'cmp-rise' : row.diff < 0 ? 'cmp-fall' : 'cmp-same';
+      const label = row.diff > 0 ? 'أعلى من المرجع' : row.diff < 0 ? 'أقل من المرجع' : 'مطابق للمرجع';
+      const delta = (row.diff > 0 ? '+' : row.diff < 0 ? '−' : '') + money(Math.abs(row.diff));
+      const bar = '<i class="' + tone + '" style="--offset:' + (row.diff >= 0 ? 50 : 50 - share) +
+        '%;--width:' + Math.max(share, 0.5) + '%" title="' + label + ' ' + delta + '"></i>';
+      return '<li data-budget-category="' + safe(row.id) + '"><div class="cmp-period-track" aria-hidden="true">' +
+        bar + '</div><div class="cmp-period-labels"><span class="cmp-delta-value ' + tone + '"><bdi dir="ltr">' +
+        signed(row.diff) + '</bdi></span><span class="cmp-delta-percent ' + tone +
+        '"><bdi dir="ltr">' + pct(ratio) + '</bdi></span></div><strong><span class="cmp-rank">' + (index + 1) + '</span> ' + safe(row.name) + '</strong></li>';
+    }).join('');
+    const chart11Html = `
+      <section class="bs-panel bs-full">
+        <h3>11. انحراف وتغير البنود عن التقديري</h3>
+        <div class="cmp-direction-key" style="margin-bottom:10px;"><span class="cmp-fall">أقل من المرجع (توفير)</span><span>صفر</span><span class="cmp-rise">أعلى من المرجع (تجاوز)</span></div>
+        <ul class="cmp-period-bars">${chart11Rows}</ul>
+        ${chartExplanation("عرض اتجاه وحجم التغير والانحراف لكل بند عن المعتمد مع نسبة التغير وصافي الفارق المالي.", "الأشرطة المتجهة لليمين باللون الأحمر تمثل تجاوزاً والأشرطة المتجهة لليسار بالأخضر تمثل وفراً وتوفيراً.")}
+      </section>
+    `;
+
     const advancedCharts = buildBudgetReferenceAdvancedCharts(sorted, totals, range, opts);
     _currentChartsMap = {
       1: chart1Html,
       2: chart2Html,
       3: chart3Html,
       ...advancedCharts,
-      9: chart9Html
+      9: chart9Html,
+      10: chart10Html,
+      11: chart11Html
     };
 
     const activeMeta = CHARTS_DECK_META[activeChartTab - 1] || CHARTS_DECK_META[0];
@@ -2178,7 +2271,7 @@ const BudgetCompareEngine = (() => {
     `;
 
     content.innerHTML='<div class="budget-spec" data-cmp-reference="'+safe(opts.reference||'plan')+'"><p class="bs-intro">مقارنة '+safe(actualLabel)+' مع '+safe(referenceLabel)+' · '+safe(range.from)+' إلى '+safe(range.to)+'</p>'+stats+
-      '<div class="bs-grid">'+chartDeckHtml+'</div></div>';
+      '<div class="bs-grid">' + (_viewMode === 'charts' ? chartDeckHtml : table) + '</div></div>';
   }
 
   // Five additional views generated for the compact chart deck
@@ -2394,8 +2487,7 @@ const BudgetCompareEngine = (() => {
     root.onclick = event => {
       const mode = event.target.closest('button[data-mode]');
       if (mode) {
-        periodChartMode = mode.dataset.mode;
-        render();
+        switchMode(mode.dataset.mode);
         return;
       }
       const button = event.target.closest('button[data-period-series]');
@@ -2483,9 +2575,10 @@ const BudgetCompareEngine = (() => {
     const referenceLabel = isPlan || isSample ? 'التقديري' : refLabel;
     const actualLabel = demoMode ? 'الصرف التجريبي' : 'الصرف الفعلي';
     const rankedName = (row, index) => '<span class="cmp-rank">' + number.format(index + 1) + '</span> ' + escapeHtml(row.name);
-    if (comparable && periodChartMode === 'table') {
+    if (comparable && (periodChartMode === 'table' || periodChartMode === 'charts')) {
       renderBudgetReferenceSpecification(content,rows,total,range,{
-        reference,baseline,referenceLabel:refLabel,actualLabel:baseLabel
+        reference,baseline,referenceLabel:refLabel,actualLabel:baseLabel,
+        mode: _viewMode
       });
       return;
     }
@@ -2538,7 +2631,11 @@ const BudgetCompareEngine = (() => {
   }
 
   function showAllCharts() {
-    periodChartMode = 'table';
+    switchMode('charts');
+  }
+
+  function _oldShowAllCharts() {
+    periodChartMode = 'charts';
     isChartDeckCollapsed = false;
     render();
     const deck = byId('cmpChartsDeck');
@@ -2583,7 +2680,7 @@ const BudgetCompareEngine = (() => {
   }
 
   return {
-    render, showAllCharts, renderReferenceInto, onActualPeriodChange, getNavigationRange, selectReference, recordSampleOperations, usePrimaryDates,
+    render, switchMode, showAllCharts, renderReferenceInto, onActualPeriodChange, getNavigationRange, selectReference, recordSampleOperations, usePrimaryDates,
     toggleDemo, openSampleOperations, renderSampleOperations, returnFromSampleOperations,
     showAllSampleOperations, showMoreSampleOperations,
     selectChartTab, toggleChartDeck
