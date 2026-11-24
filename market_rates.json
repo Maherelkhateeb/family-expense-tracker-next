@@ -2,12 +2,12 @@
   "schemaVersion": 2,
   "fxUpdatedAt": null,
   "goldUpdatedAt": null,
-  "globalGoldUpdatedAt": "2026-11-24T10:17:43+00:00",
-  "updatedAt": "2026-11-24T10:17:57.041345+00:00",
-  "checkedAt": "2026-11-24T10:17:57.041345+00:00",
+  "globalGoldUpdatedAt": "2026-11-24T20:46:14+00:00",
+  "updatedAt": "2026-11-24T20:46:30.867881+00:00",
+  "checkedAt": "2026-11-24T20:46:30.867881+00:00",
   "sourceTimeNote": "وقت التحقق منفصل عن وقت السعر؛ الوقت غير المعلن من المصدر يظل غير معلن",
-  "lastUpdateHuman": "2026-11-24 12:17 PM بتوقيت القاهرة",
-  "lastCheckedHuman": "2026-11-24 12:17 PM بتوقيت القاهرة",
+  "lastUpdateHuman": "2026-11-24 10:46 PM بتوقيت القاهرة",
+  "lastCheckedHuman": "2026-11-24 10:46 PM بتوقيت القاهرة",
   "provider": "Ta3weem / بنك مصر / مركز المعلومات IDSC",
   "rateMode": "official",
   "fxProvider": "Ta3weem / بنك مصر",
@@ -33,8 +33,8 @@
       "code": "EUR",
       "name": "يورو أوروبي",
       "buy": 59.03,
-      "sell": 59.28,
-      "chg": "0.982%",
+      "sell": 59.58,
+      "chg": "0.475%",
       "bank": "بنك مصر (مباشر تعويم)"
     },
     "AED": {
@@ -58,37 +58,37 @@
     "gold24": {
       "karat": 24,
       "name": "ذهب عيار 24 (سبائك)",
-      "buy": 6400.0,
-      "sell": 6468.5,
-      "chg": "0%",
+      "buy": 6428.5,
+      "sell": 6485.75,
+      "chg": "0.267%",
       "source": "مركز المعلومات IDSC (مباشر تعويم)"
     },
     "gold21": {
       "karat": 21,
       "name": "ذهب عيار 21 (الأكثر طلباً)",
-      "buy": 5600.0,
-      "sell": 5660.0,
-      "chg": "0%",
+      "buy": 5625.0,
+      "sell": 5675.0,
+      "chg": "0.265%",
       "source": "مركز المعلومات IDSC (مباشر تعويم)"
     },
     "gold18": {
       "karat": 18,
       "name": "ذهب عيار 18",
-      "buy": 4800.0,
-      "sell": 4851.5,
-      "chg": "0%",
+      "buy": 4821.5,
+      "sell": 4864.25,
+      "chg": "0.263%",
       "source": "مركز المعلومات IDSC (مباشر تعويم)"
     },
     "goldPound": {
       "karat": 21,
       "weight": 8,
       "name": "جنيه ذهب (BTC)",
-      "buy": 44800.0,
-      "sell": 45280.0,
-      "chg": "0%",
+      "buy": 45000.0,
+      "sell": 45400.0,
+      "chg": "0.265%",
       "source": "مركز المعلومات IDSC / الصاغة",
       "sourceUpdatedAt": null
     },
-    "goldOunceUSD": 3621.25
+    "goldOunceUSD": 3547.55
   }
 }
